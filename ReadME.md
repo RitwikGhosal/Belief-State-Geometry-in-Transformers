@@ -5,7 +5,7 @@ The reference and more 'terminal ready' implementation is by [danibalcells'  `be
 My goal is to reproduce the core belief-state geometry experiment from the ground up, understand each component in detail, and later extend the setup by modifying the HMM observation dynamics while controlling the underlying latent transition process.
 
 
-# Belief-State Geometry in Transformers -> Mess3 Replication/
+# Belief-State Geometry in Transformers -> Mess3 Replication
 
 This repository is my ground-up replication and study of the **Mess3 belief-state transformer experiment** , inspired by the work on belief-state geometry in next-token-predicting transformers.
 
@@ -29,6 +29,14 @@ The central question is:
 > **When a transformer is trained only to predict the next token of a partially observable process, does it internally learn a representation of the Bayesian belief state required for optimal prediction?**
 
 ---
+
+<p align="center">
+  <img src="comparison.png" alt="Belief-state geometry comparison" width="700">
+</p>
+
+<p align="center">
+  <em>Figure 1: Comparison between the exact Bayesian belief-state geometry and the linearly decoded transformer representation.</em>
+</p>
 
 ## 1. The Mess3 process
 
