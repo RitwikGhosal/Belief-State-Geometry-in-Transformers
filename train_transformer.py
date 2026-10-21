@@ -127,7 +127,12 @@ def compute_metrics(
 def main() -> None:
     config = parse_args()
     torch.manual_seed(config.seed)
+
     device = torch.device(config.device)
+
+    # Experimental condition
+    lambda_obs = 0.25
+
     run_id = time.strftime("%Y%m%d_%H%M%S")
 
     checkpoint_dir = (
@@ -140,32 +145,44 @@ def main() -> None:
         parents=True,
         exist_ok=True,
     )
-    
-    lambda_obs = 0.25 # for our inference experiment
 
-    hmm = Mess3(lambda_obs = lambda_obs)
+    # Build HMM for this observation condition
+    hmm = Mess3(lambda_obs=lambda_obs)
+
     mutual_information = hmm.observation_mutual_information()
+
+    # Move HMM tensors to the training device
     hmm._t_x = hmm._t_x.to(device)
     hmm._t = hmm._t.to(device)
     hmm._pi = hmm._pi.to(device)
     hmm._joint = hmm._joint.to(device)
 
+    # Build fresh transformer
     model = BeliefStateTransformer.from_paper_config(
         vocab_size=hmm.vocab_size,
         device=device,
     )
 
     model.train()
+
     if config.optimizer == "adamw":
         optimizer = torch.optim.AdamW(
             model.parameters(),
             lr=config.learning_rate,
-            betas=(config.adamw_beta1, config.adamw_beta2),
+            betas=(
+                config.adamw_beta1,
+                config.adamw_beta2,
+            ),
             weight_decay=config.adamw_weight_decay,
         )
     else:
-        optimizer = torch.optim.SGD(model.parameters(), lr=config.learning_rate)
+        optimizer = torch.optim.SGD(
+            model.parameters(),
+            lr=config.learning_rate,
+        )
+
     loss_fn = nn.CrossEntropyLoss()
+
     wandb.init(
         project="belief-state-transformers",
         name=f"lambda_{lambda_obs:.2f}_{run_id}",
@@ -195,24 +212,71 @@ def main() -> None:
         },
     )
 
+    best_eval_kl = float("inf")
+
     start_time = time.time()
+
     for step in range(1, config.epochs + 1):
-        tokens, _ = hmm.generate_batch(batch_size=config.batch_size, seq_len=config.seq_len)
+        tokens, _ = hmm.generate_batch(
+            batch_size=config.batch_size,
+            seq_len=config.seq_len,
+        )
+
         tokens = tokens.to(device)
 
         optimizer.zero_grad(set_to_none=True)
+
         logits = model.forward_tokens(tokens)
-        loss = next_token_loss_from_logits(logits, tokens, loss_fn)
+
+        loss = next_token_loss_from_logits(
+            logits,
+            tokens,
+            loss_fn,
+        )
+
         loss.backward()
         optimizer.step()
 
+        # Evaluation / logging
         if step % config.log_interval == 0:
             model.eval()
+
             with torch.no_grad():
-                train_loss, train_acc, train_kl = compute_metrics(model, hmm, tokens, loss_fn)
-                eval_tokens, _ = hmm.generate_batch(batch_size=config.batch_size, seq_len=config.seq_len)
+                train_loss, train_acc, train_kl = compute_metrics(
+                    model,
+                    hmm,
+                    tokens,
+                    loss_fn,
+                )
+
+                eval_tokens, _ = hmm.generate_batch(
+                    batch_size=config.batch_size,
+                    seq_len=config.seq_len,
+                )
+
                 eval_tokens = eval_tokens.to(device)
-                eval_loss, eval_acc, eval_kl = compute_metrics(model, hmm, eval_tokens, loss_fn)
+
+                eval_loss, eval_acc, eval_kl = compute_metrics(
+                    model,
+                    hmm,
+                    eval_tokens,
+                    loss_fn,
+                )
+
+            # Save best model according to Bayes-optimal KL
+            if eval_kl.item() < best_eval_kl:
+                best_eval_kl = eval_kl.item()
+
+                torch.save(
+                    model.state_dict(),
+                    checkpoint_dir / "best.pt",
+                )
+
+                print(
+                    f"Saved new best checkpoint "
+                    f"(eval_kl={best_eval_kl:.6f})"
+                )
+
             model.train()
 
             wandb.log(
@@ -223,25 +287,49 @@ def main() -> None:
                     "eval/loss": float(eval_loss.item()),
                     "eval/acc": float(eval_acc.item()),
                     "eval/kl_optimal": float(eval_kl.item()),
+                    "best/eval_kl": best_eval_kl,
                 },
                 step=step,
             )
+
             elapsed_s = time.time() - start_time
+
             print(
                 f"step={step} "
-                f"train_loss={float(train_loss.item()):.6f} train_acc={float(train_acc.item()):.4f} "
+                f"train_loss={float(train_loss.item()):.6f} "
+                f"train_acc={float(train_acc.item()):.4f} "
                 f"train_kl_optimal={float(train_kl.item()):.6f} "
-                f"| eval_loss={float(eval_loss.item()):.6f} eval_acc={float(eval_acc.item()):.4f} "
+                f"| eval_loss={float(eval_loss.item()):.6f} "
+                f"eval_acc={float(eval_acc.item()):.4f} "
                 f"eval_kl_optimal={float(eval_kl.item()):.6f} "
                 f"elapsed_s={elapsed_s:.2f}"
             )
 
+        # Periodic checkpoints
         if step % config.save_interval == 0:
-            torch.save(model.state_dict(), checkpoint_dir / f"step_{step}.pt")
+            torch.save(
+                model.state_dict(),
+                checkpoint_dir / f"step_{step}.pt",
+            )
 
+    # Always save final model
+    torch.save(
+        model.state_dict(),
+        checkpoint_dir / "final.pt",
+    )
+
+    # Optional user-specified extra save location
     if config.save_path is not None:
-        config.save_path.parent.mkdir(parents=True, exist_ok=True)
-        torch.save(model.state_dict(), config.save_path)
+        config.save_path.parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        torch.save(
+            model.state_dict(),
+            config.save_path,
+        )
+
     wandb.finish()
 
 
