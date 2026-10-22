@@ -135,10 +135,15 @@ def main() -> None:
 
     run_id = time.strftime("%Y%m%d_%H%M%S")
 
+    #checkpoint_dir = (
+    #    Path("outputs")
+    #    / "transformer"
+    #    / f"lambda_{lambda_obs:.2f}_{run_id}"
+    #)
+    
     checkpoint_dir = (
-        Path("outputs")
-        / "transformer"
-        / f"lambda_{lambda_obs:.2f}_{run_id}"
+	Path("/content/drive/MyDrive/BeliefStateCheckpoints")
+	/ f"lambda_{lambda_obs:.2f}_{run_id}"
     )
 
     checkpoint_dir.mkdir(
