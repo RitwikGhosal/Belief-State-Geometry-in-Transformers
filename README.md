@@ -267,5 +267,5 @@ The last experiment is especially interesting because it asks whether the repres
 
 ## References
 
-- Adam S. Shai et al., [*Transformers Represent Belief State Geometry in Their Residual Stream*](https://arxiv.org/abs/2405.15943), NeurIPS 2024.
+- Adam S. Shai et al., [*Transformers Represent Belief State Geometry in Their Residual Stream*](https://arxiv.org/abs/2405.15943),
 - Dani Balcells, [`belief-state-transformers`](https://github.com/danibalcells/belief-state-transformers).
