@@ -6,11 +6,13 @@ The reference and more terminal-ready implementation is [danibalcells' `belief-s
 
 My goal was initially to reproduce the core belief-state geometry experiment from the ground up, understand each component in detail, and then extend the setup by modifying the HMM observation dynamics while controlling the underlying latent transition process.
 
-The original replication worked:
+The original replication worked: [Original_work_replication](Original_work_replication.md)
 
 ![Original Mess3 belief-state geometry and probe reconstruction](comparison.png)
 
 The left panel shows the exact Bayesian posterior geometry calculated from the known HMM. The right panel shows the corresponding geometry decoded from the transformer's residual stream using a linear probe.
+
+The original replication work : Original_work_replication.md
 
 The transformer is trained only for next-token prediction. It is never given the hidden state, the transition matrix, or the Bayesian posterior directly.
 
