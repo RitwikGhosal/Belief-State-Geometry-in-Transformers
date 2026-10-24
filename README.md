@@ -232,11 +232,11 @@ That leaves a deeper question open:
       <sub><b>Original Mess3</b></sub>
     </td>
     <td align="center">
-      <img src="plots/comparison_lambda_0.25.png" width="300"><br>
+      <img src="comparison_lambda_0.25.png" width="300"><br>
       <sub><b>λ = 0.25</b></sub>
     </td>
     <td align="center">
-      <img src="plots/comparison_lambda_0.75.png" width="300"><br>
+      <img src="comparison_lambda_0.75.png" width="300"><br>
       <sub><b>λ = 0.75</b></sub>
     </td>
   </tr>
