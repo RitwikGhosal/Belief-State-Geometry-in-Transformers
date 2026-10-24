@@ -398,3 +398,32 @@ It is that:
 This is still an early result. The current evidence is mainly geometric and comes from individual training runs. The next steps are to repeat the experiments across seeds, quantify the geometry and cross-probe failures, and construct observation channels with similar mutual information but different state-confusion structure.
 
 That last experiment is particularly important: it would help distinguish whether the learned representation depends mainly on **how much** information is available, or on **which distinctions about the hidden world** the observations preserve.
+
+
+
+## Visual summary
+
+To summarize the intervention, the three plots below show:
+
+1. the original Mess3 belief geometry,
+2. the geometry after reducing observability to λ = 0.25,
+3. the geometry after reducing observability further to λ = 0.75.
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="comparison.png" width="300"><br>
+      <sub><b>Original Mess3</b></sub>
+    </td>
+    <td align="center">
+      <img src="comparison_lambda_0.25.png" width="300"><br>
+      <sub><b>λ = 0.25</b></sub>
+    </td>
+    <td align="center">
+      <img src="comparison_lambda_0.75.png" width="300"><br>
+      <sub><b>λ = 0.75</b></sub>
+    </td>
+  </tr>
+</table>
+
+Taken together, these plots show the main result of the intervention: even when the latent transition matrix is kept fixed, changing the informativeness of the observation channel changes the exact Bayesian belief geometry, and the transformer's probe-decoded internal geometry changes along with it.
