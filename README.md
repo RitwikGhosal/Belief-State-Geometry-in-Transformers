@@ -26,7 +26,9 @@ Mess3 is a partially observable process with three hidden states and three obser
 
 The hidden-state dynamics are governed by a transition matrix
 
-`T_ij = P(H_{t+1} = j | H_t = i)`
+```math
+T_{ij}=P(H_{t+1}=j\mid H_t=i)
+```
 
 which is kept fixed throughout the extension.
 
