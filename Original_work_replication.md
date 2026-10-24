@@ -1,10 +1,3 @@
-This repository is a ground-up implementation and study of [*Transformers Represent Belief State Geometry in Their Residual Stream*](https://arxiv.org/abs/2405.15943) by Adam S. Shai et al.
-
-The reference and more 'terminal ready' implementation is by [danibalcells'  `belief-state-transformers`  repository](https://github.com/danibalcells/belief-state-transformers).
-
-My goal is to reproduce the core belief-state geometry experiment from the ground up, understand each component in detail, and later extend the setup by modifying the HMM observation dynamics while controlling the underlying latent transition process.
-
-
 # Belief-State Geometry in Transformers -> Mess3 Replication
 
 This repository is my ground-up replication and study of the **Mess3 belief-state transformer experiment** , inspired by the work on belief-state geometry in next-token-predicting transformers.
