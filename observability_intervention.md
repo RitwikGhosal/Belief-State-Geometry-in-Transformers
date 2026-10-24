@@ -215,7 +215,7 @@ to predict the exact Bayesian posterior $b_t$.
 
 The result is:
 
-![Exact and probe-decoded belief geometry for lambda 0.25](../plots/comparison_lambda_0.25.png)
+![Exact and probe-decoded belief geometry for lambda 0.25](comparison_lambda_0.25.png)
 
 At $\lambda=0.25$, the exact Bayesian posterior geometry changes substantially from the original Mess3 geometry. A linear probe trained on the transformer's residual stream recovers a closely corresponding structure.
 
@@ -245,7 +245,7 @@ The reachable belief geometry therefore contracts into a much smaller region of 
 
 Again, a separately trained transformer develops residual activations from which the corresponding geometry can be linearly decoded:
 
-![Exact and probe-decoded belief geometry for lambda 0.75](../plots/comparison_lambda_0.75.png)
+![Exact and probe-decoded belief geometry for lambda 0.75](comparison_lambda_0.75.png)
 
 At $\lambda=0.75$, observations are only weakly informative. The exact Bayesian belief geometry contracts strongly, and a probe trained on the corresponding transformer recovers a very similar geometry.
 
@@ -309,7 +309,7 @@ W_{0.25}h_t^{(0.75)}
 
 The result looks very different:
 
-![Lambda 0.75 residuals decoded using the lambda 0.25 probe](../plots/comparison_lambda_0.75_using_0.25_probe.png)
+![Lambda 0.75 residuals decoded using the lambda 0.25 probe](comparison_lambda_0.75_using_0.25_probe.png)
 
 The left panel is still the correct Bayesian geometry for $\lambda=0.75$. The right panel uses the probe learned at $\lambda=0.25$ to decode the $\lambda=0.75$ transformer's residual stream.
 
